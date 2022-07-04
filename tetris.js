@@ -1,43 +1,124 @@
-const gameboard = document.querySelector(`#gameboard`); //canvas is 808x800
+class TetriPiece {
+  constructor(piece) {
+    this.name = piece;
+    switch (piece) {
+      case `l`:
+        this.piece = [
+          [1, 1, 1, 1],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]
+        ];
+        this.col = 2;
+        this.color = `red`;
+        break;
+      case `z`:
+        this.piece = [
+          [1, 1, 0, 0],
+          [0, 1, 1, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]
+        ];
+        this.col = 3;
+        this.color = `blue`;
+        break;
+      case `s`:
+        this.piece = [
+          [0, 1, 1, 0],
+          [1, 1, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]
+        ];
+        this.color = `green`;
+        this.col = 3;
+        break;
+      case `square`:
+        this.piece = [
+          [1, 1, 0, 0],
+          [1, 1, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]
+        ];
+        this.color = `yellow`;
+        this.col = 4;
+        break;
+      default:
+        console.log(`Invalid pice`);
+        break;
+    }
+    this.row = 0;
+  }
+
+  update() {
+    this.row++;
+  }
+  right() {
+    this.col++;
+  }
+  right() {
+    this.col--;
+  }
+
+  getPiece() {
+    return this.piece;
+  }
+
+  rotate() {
+    //z
+    /*[1,1,0,0]
+      [0,1,1,0]
+      [0,0,0,0]
+      [0,0,0,0]
+      
+      [1,1,0,0]
+      [0,1,1,0]
+      [0,0,0,0]
+      [0,0,0,0]
+      */
+  }
+}
+
+const gameboard = document.querySelector(`#gameboard`); //canvas is 808x600
 const c = gameboard.getContext('2d');
 gameboard.width = 800;
 gameboard.height = 600;
 const sqSide = 25;
+let currPiece = new TetriPiece(`s`);
 
-//each square will be 50x50 12 across = 600px
-/*Start drawing at 100px and end 100px from edge*/
+/*Start drawing at startx and starty*/
 const board = [
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-  [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-  [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+  [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+  [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
 ];
+
+const startX = (gameboard.width - board[0].length * sqSide) / 2; // X value where board is drawn
+const startY = 20; // Y value where board is drawn
 
 function draw() {
   requestAnimationFrame(draw);
-  console.log(` width: ` + gameboard.width + ` height: ` + gameboard.height);
   c.fillStyle = `black`;
-  c.fillRect(0, 0, 800, 800); //draw black background
-  /*double loop to go through the 2D array*/
-  const startX = (gameboard.width - board[0].length * sqSide) / 2;
+  c.fillRect(0, 0, 800, 800); //draw black background and clearing prev draws
+  /*double loop to go through the 2D array board*/
   for (let i = 0; i < board.length; i++) {
     for (let j = 0; j < board[i].length; j++) {
       if (board[i][j] == 10) {
@@ -45,6 +126,27 @@ function draw() {
         c.fillRect(
           startX + j * sqSide,
           20 + i * sqSide,
+          sqSide - 2,
+          sqSide - 2
+        );
+      }
+    }
+  }
+
+  c.fillStyle = currPiece.color;
+  for (let j = 0; j < currPiece.getPiece().length; j++) {
+    for (let k = 0; k < currPiece.getPiece()[j].length; k++) {
+      if (currPiece.getPiece()[j][k] !== 0) {
+        //2 for the board border
+        console.log(
+          startX + 2 * sqSide + currPiece.col * sqSide + k * sqSide,
+          startY + currPiece.row * sqSide + k * sqSide,
+          sqSide - 2,
+          sqSide - 2
+        );
+        c.fillRect(
+          startX + 2 * sqSide + currPiece.col * sqSide + k * sqSide,
+          startY + currPiece.row * sqSide + j * sqSide,
           sqSide - 2,
           sqSide - 2
         );
