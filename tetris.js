@@ -204,6 +204,8 @@ const sqSide = 25;
 let play = true;
 let score = 0;
 let currPiece = new TetrisPiece(`square`);
+let hold = null;
+let canHold = true;
 
 /*Start drawing at startx and starty*/
 let board = [
@@ -307,11 +309,9 @@ function draw() {
         );
       }
     }
-    //draw score
-    c.fillStyle = `white`;
-    c.fillText(`Score: ` + score, 100, 100);
   }
 
+  //draw current piece
   c.fillStyle = currPiece.color;
   for (let j = 0; j < currPiece.getPiece().length; j++) {
     for (let k = 0; k < currPiece.getPiece()[j].length; k++) {
@@ -326,10 +326,27 @@ function draw() {
       }
     }
   }
-}
 
-//start animation calls
-draw();
+  //draw score
+  c.fillStyle = `white`;
+  c.font = `25px sans-serif`;
+  c.fillText(`Score: `, 30, 40);
+  c.fillText(score, 30, 70);
+  c.fillText(`Hold `, 70, 100);
+  c.fillRect(50, 130, 100, 100);
+  c.fillStyle = `black`;
+  c.fillRect(51, 131, 98, 98);
+  c.fillStyle = `white`;
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      if (hold != null && hold.getPiece()[i][j] !== 0) {
+        c.fillRect(52 + j * sqSide, 132 + i * sqSide, sqSide - 2, sqSide - 2);
+      }
+    }
+  }
+
+  //draw hold piece
+}
 
 function update() {
   if (play) {
@@ -338,6 +355,7 @@ function update() {
     } else {
       //Add piece to board
       board = currPiece.addToGrid(board);
+      canHold = true;
       score += Math.pow(10, removeCompletedRows());
       //make new piece
       let pieces = [`I`, `z`, `s`, `square`, `L`, `reverse-L`, `t`];
@@ -349,6 +367,21 @@ function update() {
     }
   }
   setTimeout(update, `1000`);
+}
+
+function holdSwap() {
+  if (canHold) {
+    if (hold == null) {
+      hold = currPiece;
+      currPiece = new TetrisPiece(`I`);
+    } else {
+      let temp = currPiece;
+      currPiece = hold;
+      currPiece.row = 0;
+      hold = temp;
+    }
+  }
+  canHold = false;
 }
 
 addEventListener(`keydown`, () => {
@@ -373,8 +406,16 @@ addEventListener(`keydown`, () => {
         board = currPiece.addToGrid(board);
       }
     }
+    if (event.key == `c`) {
+      holdSwap();
+      gameboard.focus();
+    }
+    console.log(event);
   }
 });
+
+//start animation calls
+draw();
 
 //start gameupdate interval
 //rewrote to update recursion call with timeout so I can update the intervals when levels speed up
