@@ -180,17 +180,6 @@ class TetrisPiece {
   }
 
   rotate(grid) {
-    //z
-    /*[1,1,0,0]
-      [0,1,1,0]
-      [0,0,0,0]
-      [0,0,0,0]
-      
-      [1,1,0,0]
-      [0,1,1,0]
-      [0,0,0,0]
-      [0,0,0,0]
-      */
     let temp = this.rot(this.rot(this.rot(this.piece)));
     let canRotate = true;
     for (let j = 0; j < 4; j++) {
@@ -213,6 +202,7 @@ gameboard.width = 800;
 gameboard.height = 600;
 const sqSide = 25;
 let play = true;
+let score = 0;
 let currPiece = new TetrisPiece(`square`);
 
 /*Start drawing at startx and starty*/
@@ -317,6 +307,9 @@ function draw() {
         );
       }
     }
+    //draw score
+    c.fillStyle = `white`;
+    c.fillText(`Score: ` + score, 100, 100);
   }
 
   c.fillStyle = currPiece.color;
@@ -345,7 +338,7 @@ function update() {
     } else {
       //Add piece to board
       board = currPiece.addToGrid(board);
-      removeCompletedRows();
+      score += Math.pow(10, removeCompletedRows());
       //make new piece
       let pieces = [`I`, `z`, `s`, `square`, `L`, `reverse-L`, `t`];
       let randIndex = Math.round(Math.random() * (pieces.length - 1));
