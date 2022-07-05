@@ -169,7 +169,17 @@ class TetrisPiece {
     return grid;
   }
 
-  rotate() {
+  rot(array) {
+    let temp = array.map((arr) => arr.map((num) => num));
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 4; j++) {
+        temp[i][j] = array[j][i];
+      }
+    }
+    return temp.reverse();
+  }
+
+  rotate(grid) {
     //z
     /*[1,1,0,0]
       [0,1,1,0]
@@ -181,14 +191,18 @@ class TetrisPiece {
       [0,0,0,0]
       [0,0,0,0]
       */
-    let temp = this.piece.map((array) => array.map((num) => num));
-    for (let i = 0; i < this.piece.length; i++) {
-      for (let j = 0; j < this.piece.length; j++) {
-        temp[i][j] = this.piece[j][i];
+    let temp = this.rot(this.rot(this.rot(this.piece)));
+    let canRotate = true;
+    for (let j = 0; j < 4; j++) {
+      for (let k = 0; k < 4; k++) {
+        if (temp[j][k] != 0 && grid[j + this.row + 1][k + this.col + 2] != 0) {
+          canRotate = false;
+        }
       }
     }
-    this.piece = temp;
-    this.piece.reverse();
+    if (canRotate) {
+      this.piece = temp;
+    }
     //TODO: fix  clipping into set pieces/border bug
   }
 }
@@ -357,7 +371,7 @@ addEventListener(`keydown`, () => {
       }
     }
     if (event.key == `ArrowUp`) {
-      currPiece.rotate();
+      currPiece.rotate(board);
     }
     if (event.key == `ArrowDown`) {
       if (currPiece.canMoveDown(board)) {
