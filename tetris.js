@@ -55,7 +55,7 @@ class TetrisPiece {
   right() {
     this.col++;
   }
-  right() {
+  left() {
     this.col--;
   }
 
@@ -182,12 +182,6 @@ function draw() {
     for (let k = 0; k < currPiece.getPiece()[j].length; k++) {
       if (currPiece.getPiece()[j][k] !== 0) {
         //2 for the board border
-        console.log(
-          startX + 2 * sqSide + currPiece.col * sqSide + k * sqSide,
-          startY + currPiece.row * sqSide + k * sqSide,
-          sqSide - 2,
-          sqSide - 2
-        );
         c.fillRect(
           startX + 2 * sqSide + currPiece.col * sqSide + k * sqSide,
           startY + currPiece.row * sqSide + j * sqSide,
@@ -205,7 +199,7 @@ draw();
 function update() {
   if (play) {
     if (currPiece.canMoveDown(board)) {
-      currPiece.row++;
+      currPiece.update();
     } else {
       //Add piece to board
       board = currPiece.addToGrid(board);
@@ -215,7 +209,27 @@ function update() {
       let randIndex = Math.round(Math.random() * (pieces.length - 1));
       currPiece = new TetrisPiece(pieces[randIndex]);
     }
+  } else {
+    play = false;
   }
 }
 
 setInterval(update, `1000`);
+
+addEventListener(`keydown`, () => {
+  console.log(event);
+  if (event.key == `ArrowRight`) {
+    currPiece.right();
+  }
+  if (event.key == `ArrowLeft`) {
+    currPiece.left();
+  }
+  if (event.key == `ArrowUp`) {
+    currPiece.rotate();
+  }
+  if (event.key == `ArrowDown`) {
+    if (currPiece.canMoveDown(board)) {
+      currPiece.update();
+    }
+  }
+});
