@@ -10,7 +10,7 @@ class TetrisPiece {
           [0, 0, 0, 0]
         ];
         this.col = 2;
-        this.color = `blue`;
+        this.color = 1;
         break;
       case `z`:
         this.piece = [
@@ -20,7 +20,7 @@ class TetrisPiece {
           [0, 0, 0, 0]
         ];
         this.col = 3;
-        this.color = `red`;
+        this.color = 2;
         break;
       case `s`:
         this.piece = [
@@ -29,7 +29,7 @@ class TetrisPiece {
           [3, 3, 0, 0],
           [0, 0, 0, 0]
         ];
-        this.color = `green`;
+        this.color = 3;
         this.col = 3;
         break;
       case `square`:
@@ -39,7 +39,7 @@ class TetrisPiece {
           [0, 4, 4, 0],
           [0, 0, 0, 0]
         ];
-        this.color = `orange`;
+        this.color = 4;
         this.col = 4;
         break;
       case `L`:
@@ -49,7 +49,7 @@ class TetrisPiece {
           [5, 5, 5, 0],
           [0, 0, 0, 0]
         ];
-        this.color = `yellow`;
+        this.color = 5;
         this.col = 4;
         break;
       case `reverse-L`:
@@ -59,7 +59,7 @@ class TetrisPiece {
           [0, 0, 6, 0],
           [0, 0, 0, 0]
         ];
-        this.color = `purple`;
+        this.color = 6;
         this.col = 4;
         break;
       case `t`:
@@ -69,7 +69,7 @@ class TetrisPiece {
           [7, 7, 7, 0],
           [0, 0, 0, 0]
         ];
-        this.color = `cyan`;
+        this.color = 7;
         this.col = 4;
         break;
       default:
@@ -90,7 +90,6 @@ class TetrisPiece {
   }
 
   getPiece() {
-    console.log(this.piece.map((arr) => arr));
     return this.piece.map((arr) => arr);
   }
 
@@ -108,6 +107,10 @@ class TetrisPiece {
       }
     }
     return possible;
+  }
+
+  getColorIndex() {
+    return this.color;
   }
 
   canMoveRight(grid) {
@@ -201,11 +204,22 @@ const c = gameboard.getContext('2d');
 gameboard.width = 800;
 gameboard.height = 600;
 const sqSide = 25;
+const color = [
+  `black`,
+  `blue`,
+  `red`,
+  `green`,
+  `orange`,
+  `yellow`,
+  `purple`,
+  `cyan`
+];
+const possiblePieces = [`I`, `z`, `s`, `square`, `L`, `reverse-L`, `t`];
 let play = true;
 let score = 0;
-const possiblePieces = [`I`, `z`, `s`, `square`, `L`, `reverse-L`, `t`];
 let ghost;
 let pieces = [];
+let level = 1;
 let currPiece;
 let hold = null;
 let canHold = true;
@@ -249,7 +263,7 @@ function clearBoard() {
 
 function init() {
   clearBoard();
-  score = 0;
+  score = 1600000;
   canHold = true;
   currPiece = generateRandomPiece();
 
@@ -337,27 +351,8 @@ function draw() {
           case 10:
             c.fillStyle = `white`;
             break;
-          case 1:
-            c.fillStyle = `blue`;
-            break;
-          case 2:
-            c.fillStyle = `red`;
-            break;
-          case 3:
-            c.fillStyle = `green`;
-            break;
-          case 4:
-            c.fillStyle = `orange`;
-            break;
-          case 5:
-            c.fillStyle = `yellow`;
-            break;
-          case 6:
-            c.fillStyle = `purple`;
-            break;
-          case 7:
-            c.fillStyle = `cyan`;
-            break;
+          default:
+            c.fillStyle = color[board[i][j]];
         }
         c.fillRect(
           startX + j * sqSide,
@@ -370,10 +365,11 @@ function draw() {
   }
 
   //draw current piece
-  c.fillStyle = currPiece.color;
+
   for (let i = 0; i < currPiece.getPiece().length; i++) {
     for (let j = 0; j < currPiece.getPiece()[i].length; j++) {
       if (currPiece.getPiece()[i][j] !== 0) {
+        c.fillStyle = color[currPiece.getColorIndex()];
         //2 for the board border
         c.fillRect(
           startX + 2 * sqSide + currPiece.col * sqSide + j * sqSide,
@@ -395,10 +391,10 @@ function draw() {
   c.fillRect(50, 130, 100, 100);
   c.fillStyle = `black`;
   c.fillRect(51, 131, 98, 98);
-  c.fillStyle = `white`;
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 4; j++) {
       if (hold != null && hold.getPiece()[i][j] !== 0) {
+        c.fillStyle = color[hold.getColorIndex()];
         c.fillRect(52 + j * sqSide, 132 + i * sqSide, sqSide - 2, sqSide - 2);
       }
     }
@@ -412,7 +408,7 @@ function draw() {
     c.fillRect(640, 70 + a * 120, 100, 100);
     c.fillStyle = `black`;
     c.fillRect(641, 71 + a * 120, 98, 98);
-    c.fillStyle = `white`;
+    c.fillStyle = color[pieces[a].getColorIndex()];
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
         if (pieces[a].getPiece()[i][j] !== 0) {
@@ -436,7 +432,10 @@ function update() {
       //Add piece to board
       board = currPiece.addToGrid(board);
       canHold = true;
-      score += Math.pow(10, removeCompletedRows());
+      score += parseInt(
+        Math.pow(10, removeCompletedRows()) * Math.pow(level, 2)
+      );
+
       //make new piece
       pieces.push(generateRandomPiece());
       currPiece = pieces.shift();
@@ -444,8 +443,28 @@ function update() {
         currPiece.update();
       }
     }
+    if (score > 1500000) {
+      level = 10;
+    } else if (score > 1200000) {
+      level = 9;
+    } else if (score > 900000) {
+      level = 8;
+    } else if (score > 600000) {
+      level = 7;
+    } else if (score > 400000) {
+      level = 6;
+    } else if (score > 200000) {
+      level = 5;
+    } else if (score > 100000) {
+      level = 4;
+    } else if (score > 50000) {
+      level = 3;
+    } else if (score > 25000) {
+      level = 2;
+    }
+    console.log(`level: ` + level);
   }
-  setTimeout(update, `1000`);
+  setTimeout(update, `${1000 - Math.pow(level, 1.65) * 20}`);
 }
 
 function downSmash() {
@@ -498,7 +517,9 @@ addEventListener(`keydown`, () => {
           //move it into grid since init row at -1;
           currPiece.update();
         }
-        score += Math.pow(10, removeCompletedRows());
+        score += parseInt(
+          Math.pow(10, removeCompletedRows()) * Math.pow(level, 2)
+        );
         canHold = true;
       }
     }
@@ -511,13 +532,15 @@ addEventListener(`keydown`, () => {
         //move it into grid since init row at -1;
         currPiece.update();
       }
-      score += Math.pow(10, removeCompletedRows());
+      score += parseInt(
+        Math.pow(10, removeCompletedRows()) * Math.pow(level, 2)
+      );
       canHold = true;
     }
     if (event.key == `c`) {
       holdSwap();
     }
-    console.log(event);
+    // console.log(event);
   }
 });
 
