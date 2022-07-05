@@ -46,7 +46,7 @@ class TetrisPiece {
         console.log(`Invalid pice`);
         break;
     }
-    this.row = 0;
+    this.row = -1;
   }
 
   update() {
@@ -69,7 +69,7 @@ class TetrisPiece {
       for (let j = 0; j < 4; j++) {
         if (
           this.piece[i][j] != 0 &&
-          grid[i + this.row + 1][j + this.col] != 0
+          grid[i + this.row + 1][j + this.col + 2] != 0
         ) {
           possible = false;
           return possible;
@@ -77,6 +77,24 @@ class TetrisPiece {
       }
     }
     return possible;
+  }
+
+  addToGrid(grid) {
+    if (this.row == -1) {
+      //Gameover condition
+    }
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (
+          this.piece[i][j] != 0 &&
+          this.row > -1 &&
+          this.row + i < grid.length - 2 &&
+          this.col + j < grid[0].length - 2
+        )
+          grid[this.row + i][this.col + j + 2] = this.piece[i][j];
+      }
+    }
+    return grid;
   }
 
   rotate() {
@@ -103,7 +121,7 @@ let play = true;
 let currPiece = new TetrisPiece(`s`);
 
 /*Start drawing at startx and starty*/
-const board = [
+let board = [
   [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
   [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
   [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
@@ -138,9 +156,17 @@ function draw() {
   /*double loop to go through the 2D array board*/
   for (let i = 0; i < board.length; i++) {
     for (let j = 0; j < board[i].length; j++) {
-      if (board[i][j] == 10) {
+      if (board[i][j] === 10) {
         // 10 represents border piece
         c.fillStyle = `white`;
+        c.fillRect(
+          startX + j * sqSide,
+          20 + i * sqSide,
+          sqSide - 2,
+          sqSide - 2
+        );
+      } else if (board[i][j] !== 0) {
+        c.fillStyle = `red`;
         c.fillRect(
           startX + j * sqSide,
           20 + i * sqSide,
@@ -182,10 +208,11 @@ function update() {
       currPiece.row++;
     } else {
       //Add piece to board
+      board = currPiece.addToGrid(board);
 
+      //make new piece
       let pieces = [`l`, `z`, `s`, `square`];
       let randIndex = Math.round(Math.random() * (pieces.length - 1));
-      //make new piece
       currPiece = new TetrisPiece(pieces[randIndex]);
     }
   }
