@@ -203,7 +203,9 @@ gameboard.height = 600;
 const sqSide = 25;
 let play = true;
 let score = 0;
-let currPiece = new TetrisPiece(`square`);
+const possiblePieces = [`I`, `z`, `s`, `square`, `L`, `reverse-L`, `t`];
+let pieces = [];
+let currPiece;
 let hold = null;
 let canHold = true;
 
@@ -242,6 +244,27 @@ function clearBoard() {
       board[i][j] = 0;
     }
   }
+}
+
+function init() {
+  clearBoard();
+  score = 0;
+  canHold = true;
+  currPiece = generateRandomPiece();
+
+  for (let i = 0; i < 3; i++) {
+    pieces.push(generateRandomPiece());
+  }
+  //start animation calls
+  draw();
+  //start gameupdate interval
+  update();
+}
+
+function generateRandomPiece() {
+  return new TetrisPiece(
+    possiblePieces[Math.floor(Math.random() * possiblePieces.length)]
+  );
 }
 
 function removeCompletedRows() {
@@ -358,9 +381,8 @@ function update() {
       canHold = true;
       score += Math.pow(10, removeCompletedRows());
       //make new piece
-      let pieces = [`I`, `z`, `s`, `square`, `L`, `reverse-L`, `t`];
-      let randIndex = Math.round(Math.random() * (pieces.length - 1));
-      currPiece = new TetrisPiece(pieces[randIndex]);
+      pieces.push(generateRandomPiece());
+      currPiece = pieces.shift();
       if (currPiece.canMoveDown(board)) {
         currPiece.update();
       }
@@ -370,9 +392,12 @@ function update() {
 }
 
 function downSmash() {
+  let lineTraveled = 0;
   while (currPiece.canMoveDown(board)) {
     currPiece.update();
+    lineTraveled++;
   }
+  score += parseInt(Math.pow(lineTraveled * 2, 2));
 }
 
 function holdSwap() {
@@ -410,22 +435,25 @@ addEventListener(`keydown`, () => {
         currPiece.update();
       } else {
         board = currPiece.addToGrid(board);
+        pieces.push(generateRandomPiece());
+        currPiece = pieces.shift();
+        score += Math.pow(10, removeCompletedRows());
+        canHold = true;
       }
     }
     if (event.key == ` `) {
       downSmash();
+      board = currPiece.addToGrid(board);
+      pieces.push(generateRandomPiece());
+      currPiece = pieces.shift();
+      score += Math.pow(10, removeCompletedRows());
+      canHold = true;
     }
     if (event.key == `c`) {
       holdSwap();
-      gameboard.focus();
     }
     console.log(event);
   }
 });
 
-//start animation calls
-draw();
-
-//start gameupdate interval
-//rewrote to update recursion call with timeout so I can update the intervals when levels speed up
-update();
+init();
