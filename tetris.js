@@ -10,7 +10,7 @@ class TetrisPiece {
           [0, 0, 0, 0]
         ];
         this.col = 2;
-        this.color = `red`;
+        this.color = `blue`;
         break;
       case `z`:
         this.piece = [
@@ -20,7 +20,7 @@ class TetrisPiece {
           [0, 0, 0, 0]
         ];
         this.col = 3;
-        this.color = `blue`;
+        this.color = `red`;
         break;
       case `s`:
         this.piece = [
@@ -182,8 +182,11 @@ function update() {
       currPiece.row++;
     } else {
       //Add piece to board
+
+      let pieces = [`l`, `z`, `s`, `square`];
+      let randIndex = Math.round(Math.random() * (pieces.length - 1));
       //make new piece
-      currPiece = new TetrisPiece(`z`);
+      currPiece = new TetrisPiece(pieces[randIndex]);
     }
   }
 }
