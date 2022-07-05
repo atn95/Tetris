@@ -355,6 +355,7 @@ function draw() {
   c.font = `25px sans-serif`;
   c.fillText(`Score: `, 30, 40);
   c.fillText(score, 30, 70);
+  //draw hold piece
   c.fillText(`Hold `, 70, 100);
   c.fillRect(50, 130, 100, 100);
   c.fillStyle = `black`;
@@ -368,7 +369,28 @@ function draw() {
     }
   }
 
-  //draw hold piece
+  //draw next pieces
+  c.fillStyle = `white`;
+  c.fillText(`Next`, 660, 50);
+  for (let a = 0; a < pieces.length; a++) {
+    c.fillStyle = `white`;
+    c.fillRect(640, 70 + a * 120, 100, 100);
+    c.fillStyle = `black`;
+    c.fillRect(641, 71 + a * 120, 98, 98);
+    c.fillStyle = `white`;
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (pieces[a].getPiece()[i][j] !== 0) {
+          c.fillRect(
+            642 + j * sqSide,
+            72 + i * sqSide + a * 120,
+            sqSide - 2,
+            sqSide - 2
+          );
+        }
+      }
+    }
+  }
 }
 
 function update() {
