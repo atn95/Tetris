@@ -2,7 +2,7 @@ class TetrisPiece {
   constructor(piece) {
     this.name = piece;
     switch (piece) {
-      case `l`:
+      case `I`:
         this.piece = [
           [1, 1, 1, 1],
           [0, 0, 0, 0],
@@ -39,7 +39,37 @@ class TetrisPiece {
           [0, 0, 0, 0],
           [0, 0, 0, 0]
         ];
+        this.color = `orange`;
+        this.col = 4;
+        break;
+      case `L`:
+        this.piece = [
+          [0, 0, 5, 0],
+          [5, 5, 5, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]
+        ];
         this.color = `yellow`;
+        this.col = 4;
+        break;
+      case `reverse-L`:
+        this.piece = [
+          [6, 6, 6, 0],
+          [0, 0, 6, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]
+        ];
+        this.color = `purple`;
+        this.col = 4;
+        break;
+      case `t`:
+        this.piece = [
+          [0, 7, 0, 0],
+          [7, 7, 7, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0]
+        ];
+        this.color = `cyan`;
         this.col = 4;
         break;
       default:
@@ -151,6 +181,15 @@ class TetrisPiece {
       [0,0,0,0]
       [0,0,0,0]
       */
+    let temp = this.piece.map((array) => array.map((num) => num));
+    for (let i = 0; i < this.piece.length; i++) {
+      for (let j = 0; j < this.piece.length; j++) {
+        temp[i][j] = this.piece[j][i];
+      }
+    }
+    this.piece = temp;
+    this.piece.reverse();
+    //TODO: fix  clipping into set pieces/border bug
   }
 }
 
@@ -160,7 +199,7 @@ gameboard.width = 800;
 gameboard.height = 600;
 const sqSide = 25;
 let play = true;
-let currPiece = new TetrisPiece(`s`);
+let currPiece = new TetrisPiece(`square`);
 
 /*Start drawing at startx and starty*/
 let board = [
@@ -192,30 +231,34 @@ const startX = (gameboard.width - board[0].length * sqSide) / 2; // X value wher
 const startY = 20; // Y value where board is drawn
 
 function clearBoard() {
-  board = [
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
-    [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-    [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
-  ];
+  for (let i = 0; i < board.length - 2; i++) {
+    for (let j = 2; j < board[i].length - 2; j++) {
+      board[i][j] = 0;
+    }
+  }
+}
+
+function removeCompletedRows() {
+  //for score purpose
+  let lineRemoved = 0;
+  for (let i = board.length - 3; i > 0; i--) {
+    let removed = true;
+    for (let j = 2; j < board[i].length - 2; j++) {
+      if (board[i][j] == 0) {
+        removed = false;
+      }
+    }
+    if (removed) {
+      for (let a = i; a > 0; a--) {
+        for (let j = 2; j < board[a].length - 2; j++) {
+          board[a][j] = board[a - 1][j];
+        }
+      }
+      lineRemoved++;
+      i++;
+    }
+  }
+  return lineRemoved;
 }
 
 function draw() {
@@ -240,7 +283,16 @@ function draw() {
             c.fillStyle = `green`;
             break;
           case 4:
+            c.fillStyle = `orange`;
+            break;
+          case 5:
             c.fillStyle = `yellow`;
+            break;
+          case 6:
+            c.fillStyle = `purple`;
+            break;
+          case 7:
+            c.fillStyle = `cyan`;
             break;
         }
         c.fillRect(
@@ -279,15 +331,17 @@ function update() {
     } else {
       //Add piece to board
       board = currPiece.addToGrid(board);
-
+      removeCompletedRows();
       //make new piece
-      let pieces = [`l`, `z`, `s`, `square`];
+      let pieces = [`I`, `z`, `s`, `square`, `L`, `reverse-L`, `t`];
       let randIndex = Math.round(Math.random() * (pieces.length - 1));
       currPiece = new TetrisPiece(pieces[randIndex]);
+      if (currPiece.canMoveDown(board)) {
+        currPiece.update();
+      }
     }
-  } else {
-    play = false;
   }
+  setTimeout(update, `1000`);
 }
 
 addEventListener(`keydown`, () => {
@@ -308,10 +362,13 @@ addEventListener(`keydown`, () => {
     if (event.key == `ArrowDown`) {
       if (currPiece.canMoveDown(board)) {
         currPiece.update();
+      } else {
+        board = currPiece.addToGrid(board);
       }
     }
   }
 });
 
 //start gameupdate interval
-setInterval(update, `1000`);
+//rewrote to update recursion call with timeout so I can update the intervals when levels speed up
+update();
