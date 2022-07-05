@@ -1,4 +1,4 @@
-class TetriPiece {
+class TetrisPiece {
   constructor(piece) {
     this.name = piece;
     switch (piece) {
@@ -63,6 +63,22 @@ class TetriPiece {
     return this.piece;
   }
 
+  canMoveDown(grid) {
+    let possible = true;
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (
+          this.piece[i][j] != 0 &&
+          grid[i + this.row + 1][j + this.col] != 0
+        ) {
+          possible = false;
+          return possible;
+        }
+      }
+    }
+    return possible;
+  }
+
   rotate() {
     //z
     /*[1,1,0,0]
@@ -83,7 +99,8 @@ const c = gameboard.getContext('2d');
 gameboard.width = 800;
 gameboard.height = 600;
 const sqSide = 25;
-let currPiece = new TetriPiece(`s`);
+let play = true;
+let currPiece = new TetrisPiece(`s`);
 
 /*Start drawing at startx and starty*/
 const board = [
@@ -122,6 +139,7 @@ function draw() {
   for (let i = 0; i < board.length; i++) {
     for (let j = 0; j < board[i].length; j++) {
       if (board[i][j] == 10) {
+        // 10 represents border piece
         c.fillStyle = `white`;
         c.fillRect(
           startX + j * sqSide,
@@ -157,3 +175,17 @@ function draw() {
 
 //start animation calls
 draw();
+
+function update() {
+  if (play) {
+    if (currPiece.canMoveDown(board)) {
+      currPiece.row++;
+    } else {
+      //Add piece to board
+      //make new piece
+      currPiece = new TetrisPiece(`z`);
+    }
+  }
+}
+
+setInterval(update, `1000`);
