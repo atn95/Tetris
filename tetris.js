@@ -4,8 +4,8 @@ class TetrisPiece {
     switch (piece) {
       case `I`:
         this.piece = [
-          [1, 1, 1, 1],
           [0, 0, 0, 0],
+          [1, 1, 1, 1],
           [0, 0, 0, 0],
           [0, 0, 0, 0]
         ];
@@ -14,9 +14,9 @@ class TetrisPiece {
         break;
       case `z`:
         this.piece = [
+          [0, 0, 0, 0],
           [2, 2, 0, 0],
           [0, 2, 2, 0],
-          [0, 0, 0, 0],
           [0, 0, 0, 0]
         ];
         this.col = 3;
@@ -24,9 +24,9 @@ class TetrisPiece {
         break;
       case `s`:
         this.piece = [
+          [0, 0, 0, 0],
           [0, 3, 3, 0],
           [3, 3, 0, 0],
-          [0, 0, 0, 0],
           [0, 0, 0, 0]
         ];
         this.color = `green`;
@@ -34,9 +34,9 @@ class TetrisPiece {
         break;
       case `square`:
         this.piece = [
-          [4, 4, 0, 0],
-          [4, 4, 0, 0],
           [0, 0, 0, 0],
+          [0, 4, 4, 0],
+          [0, 4, 4, 0],
           [0, 0, 0, 0]
         ];
         this.color = `orange`;
@@ -44,9 +44,9 @@ class TetrisPiece {
         break;
       case `L`:
         this.piece = [
+          [0, 0, 0, 0],
           [0, 0, 5, 0],
           [5, 5, 5, 0],
-          [0, 0, 0, 0],
           [0, 0, 0, 0]
         ];
         this.color = `yellow`;
@@ -54,9 +54,9 @@ class TetrisPiece {
         break;
       case `reverse-L`:
         this.piece = [
+          [0, 0, 0, 0],
           [6, 6, 6, 0],
           [0, 0, 6, 0],
-          [0, 0, 0, 0],
           [0, 0, 0, 0]
         ];
         this.color = `purple`;
@@ -64,9 +64,9 @@ class TetrisPiece {
         break;
       case `t`:
         this.piece = [
+          [0, 0, 0, 0],
           [0, 7, 0, 0],
           [7, 7, 7, 0],
-          [0, 0, 0, 0],
           [0, 0, 0, 0]
         ];
         this.color = `cyan`;
@@ -90,7 +90,8 @@ class TetrisPiece {
   }
 
   getPiece() {
-    return this.piece;
+    console.log(this.piece.map((arr) => arr));
+    return this.piece.map((arr) => arr);
   }
 
   canMoveDown(grid) {
@@ -192,7 +193,6 @@ class TetrisPiece {
     if (canRotate) {
       this.piece = temp;
     }
-    //TODO: fix  clipping into set pieces/border bug
   }
 }
 
@@ -204,6 +204,7 @@ const sqSide = 25;
 let play = true;
 let score = 0;
 const possiblePieces = [`I`, `z`, `s`, `square`, `L`, `reverse-L`, `t`];
+let ghost;
 let pieces = [];
 let currPiece;
 let hold = null;
@@ -294,6 +295,40 @@ function draw() {
   requestAnimationFrame(draw);
   c.fillStyle = `black`;
   c.fillRect(0, 0, 800, 600); //draw black background and clearing prev draws
+
+  //draw ghost piece
+  //clone piece
+  ghost = new TetrisPiece(currPiece.name);
+  ghost.piece = currPiece.getPiece();
+  ghost.col = currPiece.col;
+  ghost.row = currPiece.row;
+  //move to when possible bottom
+  while (ghost.canMoveDown(board)) {
+    ghost.update();
+  }
+
+  for (let i = 0; i < ghost.getPiece().length; i++) {
+    for (let j = 0; j < ghost.getPiece()[i].length; j++) {
+      if (ghost.getPiece()[i][j] !== 0) {
+        //2 for the board border
+        c.fillStyle = `white`;
+        c.fillRect(
+          startX + 2 * sqSide + ghost.col * sqSide + j * sqSide,
+          startY + ghost.row * sqSide + i * sqSide,
+          sqSide - 2,
+          sqSide - 2
+        );
+        c.fillStyle = `black`;
+        c.fillRect(
+          1 + startX + 2 * sqSide + ghost.col * sqSide + j * sqSide,
+          1 + startY + ghost.row * sqSide + i * sqSide,
+          sqSide - 4,
+          sqSide - 4
+        );
+      }
+    }
+  }
+
   /*double loop to go through the 2D array board*/
   for (let i = 0; i < board.length; i++) {
     for (let j = 0; j < board[i].length; j++) {
@@ -336,13 +371,13 @@ function draw() {
 
   //draw current piece
   c.fillStyle = currPiece.color;
-  for (let j = 0; j < currPiece.getPiece().length; j++) {
-    for (let k = 0; k < currPiece.getPiece()[j].length; k++) {
-      if (currPiece.getPiece()[j][k] !== 0) {
+  for (let i = 0; i < currPiece.getPiece().length; i++) {
+    for (let j = 0; j < currPiece.getPiece()[i].length; j++) {
+      if (currPiece.getPiece()[i][j] !== 0) {
         //2 for the board border
         c.fillRect(
-          startX + 2 * sqSide + currPiece.col * sqSide + k * sqSide,
-          startY + currPiece.row * sqSide + j * sqSide,
+          startX + 2 * sqSide + currPiece.col * sqSide + j * sqSide,
+          startY + currPiece.row * sqSide + i * sqSide,
           sqSide - 2,
           sqSide - 2
         );
@@ -459,6 +494,10 @@ addEventListener(`keydown`, () => {
         board = currPiece.addToGrid(board);
         pieces.push(generateRandomPiece());
         currPiece = pieces.shift();
+        if (currPiece.canMoveDown(board)) {
+          //move it into grid since init row at -1;
+          currPiece.update();
+        }
         score += Math.pow(10, removeCompletedRows());
         canHold = true;
       }
@@ -468,6 +507,10 @@ addEventListener(`keydown`, () => {
       board = currPiece.addToGrid(board);
       pieces.push(generateRandomPiece());
       currPiece = pieces.shift();
+      if (currPiece.canMoveDown(board)) {
+        //move it into grid since init row at -1;
+        currPiece.update();
+      }
       score += Math.pow(10, removeCompletedRows());
       canHold = true;
     }
