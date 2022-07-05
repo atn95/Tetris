@@ -14,8 +14,8 @@ class TetrisPiece {
         break;
       case `z`:
         this.piece = [
-          [1, 1, 0, 0],
-          [0, 1, 1, 0],
+          [2, 2, 0, 0],
+          [0, 2, 2, 0],
           [0, 0, 0, 0],
           [0, 0, 0, 0]
         ];
@@ -24,8 +24,8 @@ class TetrisPiece {
         break;
       case `s`:
         this.piece = [
-          [0, 1, 1, 0],
-          [1, 1, 0, 0],
+          [0, 3, 3, 0],
+          [3, 3, 0, 0],
           [0, 0, 0, 0],
           [0, 0, 0, 0]
         ];
@@ -34,8 +34,8 @@ class TetrisPiece {
         break;
       case `square`:
         this.piece = [
-          [1, 1, 0, 0],
-          [1, 1, 0, 0],
+          [4, 4, 0, 0],
+          [4, 4, 0, 0],
           [0, 0, 0, 0],
           [0, 0, 0, 0]
         ];
@@ -79,9 +79,51 @@ class TetrisPiece {
     return possible;
   }
 
+  canMoveRight(grid) {
+    if (this.row == -1) {
+      return false;
+    }
+    let possible = true;
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (
+          this.row + i < grid.length &&
+          this.col + j < grid[0].length - 1 &&
+          this.piece[i][j] != 0 &&
+          grid[i + this.row][j + this.col + 3] != 0
+        ) {
+          possible = false;
+          break;
+        }
+      }
+    }
+    return possible;
+  }
+
+  canMoveLeft(grid) {
+    if (this.row == -1) {
+      return false;
+    }
+    let possible = true;
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (
+          this.row + i < grid.length &&
+          this.col + j < grid[0].length - 1 &&
+          this.piece[i][j] != 0 &&
+          grid[i + this.row][j + this.col + 1] != 0
+        ) {
+          possible = false;
+          break;
+        }
+      }
+    }
+    return possible;
+  }
+
   addToGrid(grid) {
     if (this.row == -1) {
-      //Gameover condition
+      play = false;
     }
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
@@ -149,24 +191,58 @@ let board = [
 const startX = (gameboard.width - board[0].length * sqSide) / 2; // X value where board is drawn
 const startY = 20; // Y value where board is drawn
 
+function clearBoard() {
+  board = [
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 10],
+    [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+    [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
+  ];
+}
+
 function draw() {
   requestAnimationFrame(draw);
   c.fillStyle = `black`;
-  c.fillRect(0, 0, 800, 800); //draw black background and clearing prev draws
+  c.fillRect(0, 0, 800, 600); //draw black background and clearing prev draws
   /*double loop to go through the 2D array board*/
   for (let i = 0; i < board.length; i++) {
     for (let j = 0; j < board[i].length; j++) {
-      if (board[i][j] === 10) {
-        // 10 represents border piece
-        c.fillStyle = `white`;
-        c.fillRect(
-          startX + j * sqSide,
-          20 + i * sqSide,
-          sqSide - 2,
-          sqSide - 2
-        );
-      } else if (board[i][j] !== 0) {
-        c.fillStyle = `red`;
+      if (board[i][j] !== 0) {
+        switch (board[i][j]) {
+          case 10:
+            c.fillStyle = `white`;
+            break;
+          case 1:
+            c.fillStyle = `blue`;
+            break;
+          case 2:
+            c.fillStyle = `red`;
+            break;
+          case 3:
+            c.fillStyle = `green`;
+            break;
+          case 4:
+            c.fillStyle = `yellow`;
+            break;
+        }
         c.fillRect(
           startX + j * sqSide,
           20 + i * sqSide,
@@ -214,22 +290,28 @@ function update() {
   }
 }
 
-setInterval(update, `1000`);
-
 addEventListener(`keydown`, () => {
-  console.log(event);
-  if (event.key == `ArrowRight`) {
-    currPiece.right();
-  }
-  if (event.key == `ArrowLeft`) {
-    currPiece.left();
-  }
-  if (event.key == `ArrowUp`) {
-    currPiece.rotate();
-  }
-  if (event.key == `ArrowDown`) {
-    if (currPiece.canMoveDown(board)) {
-      currPiece.update();
+  if (play) {
+    if (event.key == `ArrowRight`) {
+      if (currPiece.canMoveRight(board)) {
+        currPiece.right();
+      }
+    }
+    if (event.key == `ArrowLeft`) {
+      if (currPiece.canMoveLeft(board)) {
+        currPiece.left();
+      }
+    }
+    if (event.key == `ArrowUp`) {
+      currPiece.rotate();
+    }
+    if (event.key == `ArrowDown`) {
+      if (currPiece.canMoveDown(board)) {
+        currPiece.update();
+      }
     }
   }
 });
+
+//start gameupdate interval
+setInterval(update, `1000`);
