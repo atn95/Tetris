@@ -369,6 +369,12 @@ function update() {
   setTimeout(update, `1000`);
 }
 
+function downSmash() {
+  while (currPiece.canMoveDown(board)) {
+    currPiece.update();
+  }
+}
+
 function holdSwap() {
   if (canHold) {
     if (hold == null) {
@@ -405,6 +411,9 @@ addEventListener(`keydown`, () => {
       } else {
         board = currPiece.addToGrid(board);
       }
+    }
+    if (event.key == ` `) {
+      downSmash();
     }
     if (event.key == `c`) {
       holdSwap();
