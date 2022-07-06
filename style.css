@@ -6,6 +6,16 @@ canvas {
 h1 {
     padding: 0;
     margin-bottom: 10px;
+    background: rgba(0,0,0, .05);
+    width: 200px;
+    border-radius: 50%;
+}
+
+h3 {
+    margin: 0;
+    background: rgba(0,0,0, .05);
+    width: 200px;
+    border-radius: 50%;
 }
 
 header {
@@ -34,8 +44,33 @@ header {
     align-self: center;
 }
 
+.label {
+    font-size: 25px;
+}
+
+.slider-container {
+    width: 70%;
+    margin: 0 auto;
+}
+
+.slider {
+    position: relative;
+    align-self: center;
+    margin: 0 auto;
+    width: 100%;
+    
+}
+.volume-ctrl {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    display: block;
+    text-align: center;
+}
+
 .score-div{
     display: flex;
+    flex-direction: column;
 }
 
 h2 {

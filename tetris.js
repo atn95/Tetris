@@ -205,6 +205,8 @@ const c = gameboard.getContext('2d');
 const scoreLoc = document.querySelector(`#score`);
 const playBtn = document.querySelector(`#play`);
 const clearBtn = document.querySelector(`#clear`);
+const volumeSlider = document.querySelector(`#volume`);
+let volume = volumeSlider.value / 100;
 gameboard.width = 800;
 gameboard.height = 600;
 const sqSide = 25;
@@ -283,7 +285,7 @@ function start() {
   if (bgm.paused) {
     bgm.play();
     //increase to increase max volume or decrease if still too loud
-    bgm.volume = 0.5;
+    bgm.volume = volume;
   }
   playBtn.classList.add(`hidden`);
   playBtn.innerText = `Play Again`;
@@ -621,6 +623,12 @@ bgm.addEventListener(
   },
   false
 );
+
+volumeSlider.addEventListener(`click`, () => {
+  volume = volumeSlider.value / 100;
+  //set all audio to volume to update
+  bgm.volume = volume;
+});
 
 clearBtn.addEventListener(`click`, () => {
   highscores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
