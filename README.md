@@ -47,3 +47,14 @@ Tetris will be a single player tetris game built mainly with javascript dealing 
 ---
 
 # Credit
+
+## Background Music
+
+- Manage by IN-AUDIOCORPORATE | https://in-corporateaudio.bandcamp.com/album/manage-long-version
+  Music promoted by https://www.chosic.com/free-music/all/
+  Creative Commons CC BY 3.0
+  https://creativecommons.org/licenses/by/3.0/
+
+## Audio looping in JS
+
+- https://stackoverflow.com/a/3273566

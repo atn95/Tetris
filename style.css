@@ -3,13 +3,20 @@ canvas {
     height: 600px;
 }
 
+h1 {
+    padding: 0;
+    margin-bottom: 10px;
+}
+
 header {
     background: url('https://s3.amazonaws.com/tetris-www1/assets/article/2017/06/14/tetris-lingo-feature_feature.jpg');
     background-position: center;
     height: 75px;
     border-radius: 20px;
-    padding: 2%;
+    color: white;
+    padding: 3%;
 }
+
 .body {
     width: 100%;
     display: grid;
@@ -76,4 +83,12 @@ li::before {
 
 .hidden {
     display: none;
+}
+
+#clear {
+    position: relative;
+    display: block;
+    margin: 0 auto;
+    width: 60%;
+    font-size: 20px;
 }

@@ -199,10 +199,12 @@ class TetrisPiece {
   }
 }
 
+const bgm = new Audio(`./bgm.mp3`);
 const gameboard = document.querySelector(`#gameboard`); //canvas is 808x600
 const c = gameboard.getContext('2d');
 const scoreLoc = document.querySelector(`#score`);
 const playBtn = document.querySelector(`#play`);
+const clearBtn = document.querySelector(`#clear`);
 gameboard.width = 800;
 gameboard.height = 600;
 const sqSide = 25;
@@ -278,6 +280,11 @@ function init() {
 }
 
 function start() {
+  if (bgm.paused) {
+    bgm.play();
+    //increase to increase max volume or decrease if still too loud
+    bgm.volume = 0.5;
+  }
   playBtn.classList.add(`hidden`);
   playBtn.innerText = `Play Again`;
   clearBoard();
@@ -288,8 +295,10 @@ function start() {
   loadScore();
   //genereate initial piece and pieces array
   currPiece = generateRandomPiece();
-  for (let i = 0; i < 3; i++) {
-    pieces.push(generateRandomPiece());
+  if (pieces.length < 3) {
+    for (let i = 0; i < 3; i++) {
+      pieces.push(generateRandomPiece());
+    }
   }
   play = true;
   //start gameupdate interval
@@ -406,18 +415,21 @@ function draw() {
   c.fillText(`Score: `, 30, 40);
   c.fillText(score, 30, 70);
   //draw hold piece
-  c.fillText(`Hold `, 70, 100);
-  c.fillRect(50, 130, 101, 101);
+  c.fillText(`Hold `, 80, 100);
+  c.fillRect(60, 130, 101, 101);
   c.fillStyle = `black`;
-  c.fillRect(51, 131, 99, 99);
+  c.fillRect(61, 131, 99, 99);
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 4; j++) {
       if (hold != null && hold.getPiece()[i][j] !== 0) {
         c.fillStyle = color[hold.getColorIndex()];
-        c.fillRect(52 + j * sqSide, 132 + i * sqSide, sqSide - 2, sqSide - 2);
+        c.fillRect(62 + j * sqSide, 132 + i * sqSide, sqSide - 2, sqSide - 2);
       }
     }
   }
+  c.fillStyle = `white`;
+  c.font = `35px sans-serif`;
+  c.fillText(`Level: ` + level, 40, 300);
 
   //draw next pieces
   c.fillStyle = `white`;
@@ -485,7 +497,6 @@ function update() {
     }
     console.log(`level: ` + level);
   } else {
-    //TODO:replay and populate score
     if (!sendScore) {
       if (score > highscores[highscores.length - 1]) {
         highscores.push(score);
@@ -599,8 +610,22 @@ addEventListener(`keydown`, () => {
     if (event.key == `c`) {
       holdSwap();
     }
-    // console.log(event);
   }
+});
+
+bgm.addEventListener(
+  `ended`,
+  function () {
+    this.currentTime = 0;
+    this.play();
+  },
+  false
+);
+
+clearBtn.addEventListener(`click`, () => {
+  highscores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  saveHighScore();
+  writeScore();
 });
 
 playBtn.addEventListener(`click`, start);
