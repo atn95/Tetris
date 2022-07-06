@@ -497,8 +497,9 @@ function update() {
     } else if (score > 25000) {
       level = 2;
     }
-    console.log(`level: ` + level);
+    bgm.playbackRate = parseFloat(`1.${level / 10}`);
   } else {
+    bgm.playbackRate = 1;
     if (!sendScore) {
       if (score > highscores[highscores.length - 1]) {
         highscores.push(score);
