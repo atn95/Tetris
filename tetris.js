@@ -201,6 +201,8 @@ class TetrisPiece {
 
 const gameboard = document.querySelector(`#gameboard`); //canvas is 808x600
 const c = gameboard.getContext('2d');
+const scoreLoc = document.querySelector(`#score`);
+const playBtn = document.querySelector(`#play`);
 gameboard.width = 800;
 gameboard.height = 600;
 const sqSide = 25;
@@ -214,8 +216,9 @@ const color = [
   `purple`,
   `cyan`
 ];
+let highscores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 const possiblePieces = [`I`, `z`, `s`, `square`, `L`, `reverse-L`, `t`];
-let play = true;
+let play = false;
 let score = 0;
 let ghost;
 let pieces = [];
@@ -223,6 +226,7 @@ let level = 1;
 let currPiece;
 let hold = null;
 let canHold = true;
+let sendScore = false;
 
 /*Start drawing at startx and starty*/
 let board = [
@@ -262,18 +266,33 @@ function clearBoard() {
 }
 
 function init() {
-  clearBoard();
-  score = 1600000;
-  canHold = true;
   currPiece = generateRandomPiece();
-
   for (let i = 0; i < 3; i++) {
     pieces.push(generateRandomPiece());
   }
+  loadScore();
+  writeScore();
+  update();
   //start animation calls
   draw();
+}
+
+function start() {
+  playBtn.classList.add(`hidden`);
+  playBtn.innerText = `Play Again`;
+  clearBoard();
+  score = 0;
+  canHold = true;
+  level = 1;
+  sendScore = false;
+  loadScore();
+  //genereate initial piece and pieces array
+  currPiece = generateRandomPiece();
+  for (let i = 0; i < 3; i++) {
+    pieces.push(generateRandomPiece());
+  }
+  play = true;
   //start gameupdate interval
-  update();
 }
 
 function generateRandomPiece() {
@@ -388,9 +407,9 @@ function draw() {
   c.fillText(score, 30, 70);
   //draw hold piece
   c.fillText(`Hold `, 70, 100);
-  c.fillRect(50, 130, 100, 100);
+  c.fillRect(50, 130, 101, 101);
   c.fillStyle = `black`;
-  c.fillRect(51, 131, 98, 98);
+  c.fillRect(51, 131, 99, 99);
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 4; j++) {
       if (hold != null && hold.getPiece()[i][j] !== 0) {
@@ -405,9 +424,9 @@ function draw() {
   c.fillText(`Next`, 660, 50);
   for (let a = 0; a < pieces.length; a++) {
     c.fillStyle = `white`;
-    c.fillRect(640, 70 + a * 120, 100, 100);
+    c.fillRect(640, 70 + a * 120, 101, 101);
     c.fillStyle = `black`;
-    c.fillRect(641, 71 + a * 120, 98, 98);
+    c.fillRect(641, 71 + a * 120, 99, 99);
     c.fillStyle = color[pieces[a].getColorIndex()];
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
@@ -443,6 +462,8 @@ function update() {
         currPiece.update();
       }
     }
+
+    score += level * 100;
     if (score > 1500000) {
       level = 10;
     } else if (score > 1200000) {
@@ -463,8 +484,45 @@ function update() {
       level = 2;
     }
     console.log(`level: ` + level);
+  } else {
+    //TODO:replay and populate score
+    if (!sendScore) {
+      if (score > highscores[highscores.length - 1]) {
+        highscores.push(score);
+        highscores = highscores.sort((a, b) => b - a);
+        highscores.pop();
+        saveHighScore();
+        console.log(highscores);
+      }
+      //Write once after game over
+      playBtn.classList.remove(`hidden`);
+      sendScore = true;
+      writeScore();
+    }
   }
   setTimeout(update, `${1000 - Math.pow(level, 1.65) * 20}`);
+}
+
+function loadScore() {
+  //load score from local storage
+  if (!localStorage.getItem(`hScores`)) {
+    localStorage.setItem(`hScores`, JSON.stringify(highscores));
+  } else {
+    highscores = JSON.parse(localStorage.getItem(`hScores`));
+  }
+}
+
+function saveHighScore() {
+  localStorage.setItem(`hScores`, JSON.stringify(highscores));
+}
+
+function writeScore() {
+  scoreLoc.innerHTML = ``;
+  highscores.forEach((score) => {
+    let listItem = document.createElement(`li`);
+    listItem.innerText = `${score}`;
+    scoreLoc.append(listItem);
+  });
 }
 
 function downSmash() {
@@ -480,7 +538,8 @@ function holdSwap() {
   if (canHold) {
     if (hold == null) {
       hold = currPiece;
-      currPiece = new TetrisPiece(`I`);
+      currPiece = pieces.shift();
+      pieces.push(generateRandomPiece());
     } else {
       let temp = currPiece;
       currPiece = hold;
@@ -543,5 +602,7 @@ addEventListener(`keydown`, () => {
     // console.log(event);
   }
 });
+
+playBtn.addEventListener(`click`, start);
 
 init();

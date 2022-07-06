@@ -2,3 +2,78 @@ canvas {
     width: 800px;
     height: 600px;
 }
+
+header {
+    background: url('https://s3.amazonaws.com/tetris-www1/assets/article/2017/06/14/tetris-lingo-feature_feature.jpg');
+    background-position: center;
+    height: 75px;
+    border-radius: 20px;
+    padding: 2%;
+}
+.body {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: 1fr;
+    justify-content: space-between;
+}
+
+.scoreboard {
+    width: 70%;
+    display: relative;
+    margin: 0 auto;
+    border: 5px solid black;
+    border-radius: 10px;
+    align-self: center;
+}
+
+.score-div{
+    display: flex;
+}
+
+h2 {
+    text-align: center;
+    font-size: 30px;
+    margin-top: 5px
+}
+
+ol {
+    font-size: 25px;
+    margin-left: 20px;
+    /* text-align: center; */
+}
+
+li::before {
+    content:") ";
+    width: 1em;
+    margin-left: -.2em;
+}
+
+.canvas-div {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    margin: 0 auto;
+}
+
+#play {
+    position: absolute;
+    font-size: 40px;
+    top: 45%;
+    left: calc(50% - 120px);
+    width: 240px;
+    padding: 1%;
+    border-radius: 10px;
+    background: green;
+    transition: transform .5s;
+    transition: background .3s;
+}
+
+#play:hover {
+    transform: scale(1.1);
+    background: rgb(0, 255, 0);
+}
+
+.hidden {
+    display: none;
+}

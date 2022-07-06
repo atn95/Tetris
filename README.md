@@ -37,12 +37,12 @@ Tetris will be a single player tetris game built mainly with javascript dealing 
 # Task List
 
 - [ ] Music
-- [ ] Change score calculations for tetris/tspins
-- [ ] Ghost Piece where it would land if you did a fast down
-- [ ] Show the next few piece
-- [ ] Show a next move piece
-- [ ] Add a hold piece
-- [ ] Main Game
+- [x] Score Calculations for tetris
+- [x] Ghost Piece where it would land if you did a fast down
+- [x] Show the next few piece
+- [x] Show a next move piece
+- [x] Add a hold piece
+- [x] Main Game
 
 ---
 
