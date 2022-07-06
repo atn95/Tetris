@@ -58,3 +58,7 @@ Tetris will be a single player tetris game built mainly with javascript dealing 
 ## Audio looping in JS
 
 - https://stackoverflow.com/a/3273566
+
+## Local Storage
+
+- https://developer.mozilla.org/en-US/docs/Web/API/Storage

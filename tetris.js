@@ -200,6 +200,7 @@ class TetrisPiece {
 }
 
 const bgm = new Audio(`./bgm.mp3`);
+const lineClearedSound = new Audio(`./lineclear.wav`);
 const gameboard = document.querySelector(`#gameboard`); //canvas is 808x600
 const c = gameboard.getContext('2d');
 const scoreLoc = document.querySelector(`#score`);
@@ -286,6 +287,7 @@ function start() {
     bgm.play();
     //increase to increase max volume or decrease if still too loud
     bgm.volume = volume;
+    lineClearedSound.volume = volume;
   }
   playBtn.classList.add(`hidden`);
   playBtn.innerText = `Play Again`;
@@ -331,6 +333,9 @@ function removeCompletedRows() {
       lineRemoved++;
       i++;
     }
+  }
+  if (lineRemoved > 0) {
+    lineClearedSound.play();
   }
   return lineRemoved;
 }
@@ -629,6 +634,7 @@ volumeSlider.addEventListener(`click`, () => {
   volume = volumeSlider.value / 100;
   //set all audio to volume to update
   bgm.volume = volume;
+  lineClearedSound.volume = volume;
 });
 
 clearBtn.addEventListener(`click`, () => {
