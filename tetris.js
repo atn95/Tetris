@@ -232,6 +232,7 @@ let currPiece;
 let hold = null;
 let canHold = true;
 let sendScore = false;
+let combo = 0;
 
 /*Start drawing at startx and starty*/
 let board = [
@@ -434,9 +435,15 @@ function draw() {
       }
     }
   }
+
+  //Draw level
   c.fillStyle = `white`;
   c.font = `35px sans-serif`;
   c.fillText(`Level: ` + level, 40, 300);
+
+  //Draw Combo
+  c.font = `28px sans-serif`;
+  c.fillText(`Combo : ` + combo, 40, 360);
 
   //draw next pieces
   c.fillStyle = `white`;
@@ -470,10 +477,15 @@ function update() {
       //Add piece to board
       board = currPiece.addToGrid(board);
       canHold = true;
-      score += parseInt(
-        Math.pow(10, removeCompletedRows()) * Math.pow(level, 2)
-      );
-
+      let lineRemoved = removeCompletedRows();
+      if (lineRemoved > 0) {
+        combo++;
+      } else {
+        combo = 0;
+      }
+      score +=
+        (2 + combo) / 2 +
+        parseInt(Math.pow(10, lineRemoved) * Math.pow(level, 2));
       //make new piece
       pieces.push(generateRandomPiece());
       currPiece = pieces.shift();
@@ -481,7 +493,7 @@ function update() {
         currPiece.update();
       }
     }
-
+    console.log(combo);
     score += level * 100;
     if (score > 1500000) {
       level = 10;
@@ -511,7 +523,6 @@ function update() {
         highscores = highscores.sort((a, b) => b - a);
         highscores.pop();
         saveHighScore();
-        console.log(highscores);
       }
       //Write once after game over
       playBtn.classList.remove(`hidden`);
@@ -595,9 +606,15 @@ addEventListener(`keydown`, () => {
           //move it into grid since init row at -1;
           currPiece.update();
         }
-        score += parseInt(
-          Math.pow(10, removeCompletedRows()) * Math.pow(level, 2)
-        );
+        let lineRemoved = removeCompletedRows();
+        if (lineRemoved > 0) {
+          combo++;
+        } else {
+          combo = 0;
+        }
+        score +=
+          (2 + combo) / 2 +
+          parseInt(Math.pow(10, lineRemoved) * Math.pow(level, 2));
         canHold = true;
       }
     }
@@ -610,9 +627,15 @@ addEventListener(`keydown`, () => {
         //move it into grid since init row at -1;
         currPiece.update();
       }
-      score += parseInt(
-        Math.pow(10, removeCompletedRows()) * Math.pow(level, 2)
-      );
+      let lineRemoved = removeCompletedRows();
+      if (lineRemoved > 0) {
+        combo++;
+      } else {
+        combo = 0;
+      }
+      score +=
+        (2 + combo) / 2 +
+        parseInt(Math.pow(10, lineRemoved) * Math.pow(level, 2));
       canHold = true;
     }
     if (event.key == `c`) {

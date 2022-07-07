@@ -36,7 +36,7 @@ Tetris will be a single player tetris game built mainly with javascript dealing 
 
 # Task List
 
-- [ ] Music
+- [x] Music
 - [x] Score Calculations for tetris
 - [x] Ghost Piece where it would land if you did a fast down
 - [x] Show the next few piece
