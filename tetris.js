@@ -184,6 +184,7 @@ class TetrisPiece {
   }
 
   rotate(grid) {
+    //rotating 3 times because it provides a smoother rotation due to the method used to shift the array
     let temp = this.rot(this.rot(this.rot(this.piece)));
     let canRotate = true;
     for (let j = 0; j < 4; j++) {
@@ -278,6 +279,7 @@ function init() {
   }
   loadScore();
   writeScore();
+  //start the update logic
   update();
   //start animation calls
   draw();
@@ -305,8 +307,8 @@ function start() {
       pieces.push(generateRandomPiece());
     }
   }
-  play = true;
   //start gameupdate interval
+  play = true;
 }
 
 function generateRandomPiece() {
@@ -343,9 +345,10 @@ function removeCompletedRows() {
 
 function draw() {
   requestAnimationFrame(draw);
-  c.fillStyle = `black`;
+  c.fillStyle = `white`;
   c.fillRect(0, 0, 800, 600); //draw black background and clearing prev draws
-
+  c.fillStyle = `black`;
+  c.fillRect(2, 2, 796, 596);
   //draw ghost piece
   //clone piece
   ghost = new TetrisPiece(currPiece.name);
@@ -419,7 +422,7 @@ function draw() {
 
   //draw score
   c.fillStyle = `white`;
-  c.font = `25px sans-serif`;
+  c.font = `25px VT323`;
   c.fillText(`Score: `, 30, 40);
   c.fillText(score, 30, 70);
   //draw hold piece
@@ -438,11 +441,11 @@ function draw() {
 
   //Draw level
   c.fillStyle = `white`;
-  c.font = `35px sans-serif`;
+  c.font = `35px VT323`;
   c.fillText(`Level: ` + level, 40, 300);
 
   //Draw Combo
-  c.font = `28px sans-serif`;
+  c.font = `28px VT323`;
   c.fillText(`Combo : ` + combo, 40, 360);
 
   //draw next pieces
@@ -483,9 +486,9 @@ function update() {
       } else {
         combo = 0;
       }
-      score +=
-        (2 + combo) / 2 +
-        parseInt(Math.pow(10, lineRemoved) * Math.pow(level, 2));
+      score += parseInt(
+        (2 + combo) / 2 + Math.pow(10, lineRemoved) * Math.pow(level, 2)
+      );
       //make new piece
       pieces.push(generateRandomPiece());
       currPiece = pieces.shift();
@@ -612,9 +615,9 @@ addEventListener(`keydown`, () => {
         } else {
           combo = 0;
         }
-        score +=
-          (2 + combo) / 2 +
-          parseInt(Math.pow(10, lineRemoved) * Math.pow(level, 2));
+        score += parseInt(
+          (2 + combo) / 2 + Math.pow(10, lineRemoved) * Math.pow(level, 2)
+        );
         canHold = true;
       }
     }
@@ -633,9 +636,9 @@ addEventListener(`keydown`, () => {
       } else {
         combo = 0;
       }
-      score +=
-        (2 + combo) / 2 +
-        parseInt(Math.pow(10, lineRemoved) * Math.pow(level, 2));
+      score += parseInt(
+        (2 + combo) / 2 + Math.pow(10, lineRemoved) * Math.pow(level, 2)
+      );
       canHold = true;
     }
     if (event.key == `c`) {
