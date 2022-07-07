@@ -360,7 +360,7 @@ function draw() {
   c.lineWidth = 5;
   c.strokeStyle = `white`;
   c.strokeRect(0, 0, 800, 600);
-
+  c.lineWidth = 1;
   //draw arrow Key image
   c.fillStyle = `white`;
   c.fillText(`Controls`, 20, 400);
@@ -383,18 +383,11 @@ function draw() {
       if (ghost.getPiece()[i][j] !== 0) {
         //2 for the board border
         c.fillStyle = `white`;
-        c.fillRect(
+        c.strokeRect(
           startX + 2 * sqSide + ghost.col * sqSide + j * sqSide,
           startY + ghost.row * sqSide + i * sqSide,
           sqSide - 2,
           sqSide - 2
-        );
-        c.fillStyle = `black`;
-        c.fillRect(
-          1 + startX + 2 * sqSide + ghost.col * sqSide + j * sqSide,
-          1 + startY + ghost.row * sqSide + i * sqSide,
-          sqSide - 4,
-          sqSide - 4
         );
       }
     }
@@ -445,9 +438,7 @@ function draw() {
   c.fillText(score, 30, 70);
   //draw hold piece
   c.fillText(`Hold `, 80, 100);
-  c.fillRect(60, 130, 101, 101);
-  c.fillStyle = `black`;
-  c.fillRect(61, 131, 99, 99);
+  c.strokeRect(60, 130, 101, 101);
   for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 4; j++) {
       if (hold != null && hold.getPiece()[i][j] !== 0) {
@@ -471,9 +462,7 @@ function draw() {
   c.fillText(`Next`, 660, 50);
   for (let a = 0; a < pieces.length; a++) {
     c.fillStyle = `white`;
-    c.fillRect(640, 70 + a * 120, 101, 101);
-    c.fillStyle = `black`;
-    c.fillRect(641, 71 + a * 120, 99, 99);
+    c.strokeRect(640, 70 + a * 120, 101, 101);
     c.fillStyle = color[pieces[a].getColorIndex()];
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
@@ -690,3 +679,5 @@ clearBtn.addEventListener(`click`, () => {
 playBtn.addEventListener(`click`, start);
 
 init();
+
+document.addEventListener(`click`, () => bgm.play());
