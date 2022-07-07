@@ -207,6 +207,12 @@ const c = gameboard.getContext('2d');
 const scoreLoc = document.querySelector(`#score`);
 const playBtn = document.querySelector(`#play`);
 const clearBtn = document.querySelector(`#clear`);
+const arrowKeyImg = new Image(90, 90);
+arrowKeyImg.src = `arrow.png`;
+const spaceKeyImg = new Image(59, 19);
+spaceKeyImg.src = 'space.png';
+const cKeyImg = new Image(19, 19);
+cKeyImg.src = 'c.png';
 const volumeSlider = document.querySelector(`#volume`);
 let volume = volumeSlider.value / 100;
 gameboard.width = 800;
@@ -345,10 +351,22 @@ function removeCompletedRows() {
 
 function draw() {
   requestAnimationFrame(draw);
-  c.fillStyle = `white`;
-  c.fillRect(0, 0, 800, 600); //draw black background and clearing prev draws
+
+  //draw black background and clearing prev draws
   c.fillStyle = `black`;
-  c.fillRect(2, 2, 796, 596);
+  c.fillRect(0, 0, 800, 600);
+
+  //drawing border
+  c.lineWidth = 5;
+  c.strokeStyle = `white`;
+  c.strokeRect(0, 0, 800, 600);
+
+  //draw arrow Key image
+  c.fillStyle = `white`;
+  c.fillText(`Controls`, 20, 400);
+  c.drawImage(arrowKeyImg, 90, 400, 90, 90);
+  c.drawImage(spaceKeyImg, 60, 490, 88.5, 28.5);
+  c.drawImage(cKeyImg, 40, 450, 28.5, 28.5);
   //draw ghost piece
   //clone piece
   ghost = new TetrisPiece(currPiece.name);
