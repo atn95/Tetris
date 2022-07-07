@@ -215,6 +215,8 @@ const cKeyImg = new Image(19, 19);
 cKeyImg.src = 'c.png';
 const volumeSlider = document.querySelector(`#volume`);
 let volume = volumeSlider.value / 100;
+const musicCheckBox = document.querySelector(`#mute`);
+let mute = musicCheckBox.checked;
 gameboard.width = 800;
 gameboard.height = 600;
 const sqSide = 25;
@@ -292,7 +294,7 @@ function init() {
 }
 
 function start() {
-  if (bgm.paused) {
+  if (bgm.paused && !mute) {
     bgm.play();
     //increase to increase max volume or decrease if still too loud
     bgm.volume = volume;
@@ -315,6 +317,11 @@ function start() {
   }
   //start gameupdate interval
   play = true;
+}
+
+function replayMusic() {
+  bgm.currentTime = 0;
+  bgm.play();
 }
 
 function generateRandomPiece() {
@@ -654,14 +661,7 @@ addEventListener(`keydown`, () => {
   }
 });
 
-bgm.addEventListener(
-  `ended`,
-  function () {
-    this.currentTime = 0;
-    this.play();
-  },
-  false
-);
+bgm.addEventListener(`ended`, replayMusic, false);
 
 volumeSlider.addEventListener(`click`, () => {
   volume = volumeSlider.value / 100;
@@ -676,8 +676,16 @@ clearBtn.addEventListener(`click`, () => {
   writeScore();
 });
 
+musicCheckBox.addEventListener(`click`, () => {
+  mute = musicCheckBox.checked;
+  console.log(mute);
+  if (!mute) {
+    replayMusic();
+  } else {
+    bgm.pause();
+  }
+});
+
 playBtn.addEventListener(`click`, start);
 
 init();
-
-document.addEventListener(`click`, () => bgm.play());
