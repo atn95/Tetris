@@ -28,14 +28,14 @@ Tetris will be a single player tetris game built mainly with javascript dealing 
 
 ### Image
 
-[Wireframe](https://wireframe.cc/F8BhmL)
+[Screenshot]([https://wireframe.cc/F8BhmL](https://imgur.com/a/INjMgJW))
 
-![Wireframe](https://i.imgur.com/fHOyJNM.png)
+![Screenshot](https://i.imgur.com/ekEF4Ob.png)
 
 ---
 
 # Task List
-
+- [ ] Mobile control
 - [x] Music
 - [x] Score Calculations for tetris
 - [x] Ghost Piece where it would land if you did a fast down
