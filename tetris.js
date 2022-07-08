@@ -213,13 +213,19 @@ const spaceKeyImg = new Image(59, 19);
 spaceKeyImg.src = 'space.png';
 const cKeyImg = new Image(19, 19);
 cKeyImg.src = 'c.png';
+// check if on mobile display
+const mobile = window.matchMedia('screen and (max-width:600px)').matches;
 const volumeSlider = document.querySelector(`#volume`);
 let volume = volumeSlider.value / 100;
 const musicCheckBox = document.querySelector(`#mute`);
 let mute = musicCheckBox.checked;
-gameboard.width = 800;
+// 375, 667 cmmon mobile screen
+gameboard.width = !mobile ? 800 : window.innerWidth;
 gameboard.height = 600;
-const sqSide = 25;
+
+const cWidth = gameboard.width;
+const cHeight = gameboard.height;
+const sqSide = !mobile ? 25 : 21;
 const color = [
   `black`,
   `blue`,
@@ -230,6 +236,7 @@ const color = [
   `purple`,
   `cyan`
 ];
+const pieceBoxSize = 4 * sqSide + 1;
 let highscores = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 const possiblePieces = [`I`, `z`, `s`, `square`, `L`, `reverse-L`, `t`];
 let play = false;
@@ -270,7 +277,7 @@ let board = [
 ];
 
 const startX = (gameboard.width - board[0].length * sqSide) / 2; // X value where board is drawn
-const startY = 20; // Y value where board is drawn
+const startY = !mobile ? 20 : 30; // Y value where board is drawn
 
 function clearBoard() {
   for (let i = 0; i < board.length - 2; i++) {
@@ -289,8 +296,13 @@ function init() {
   writeScore();
   //start the update logic
   update();
+
   //start animation calls
-  draw();
+  if (!mobile) {
+    draw();
+  } else {
+    drawMobile();
+  }
 }
 
 function start() {
@@ -356,6 +368,130 @@ function removeCompletedRows() {
   return lineRemoved;
 }
 
+function drawMobile() {
+  requestAnimationFrame(drawMobile);
+  c.fillStyle = `black`;
+  c.fillRect(0, 0, cWidth, cHeight);
+
+  //Draw score/level/combo
+  c.strokeStyle = `white`;
+  c.fillStyle = `white`;
+  c.lineWidth = 2;
+  c.font = `20px VT323`;
+  c.strokeRect(0, 0, cWidth, startY - 2);
+  c.fillText(` Level:${level}  | Combo: ${combo}  | Score: ${score}`, 0, 20);
+  //drawgrid
+  for (let i = 0; i < board.length; i++) {
+    for (let j = 0; j < board[i].length; j++) {
+      if (board[i][j] !== 0) {
+        switch (board[i][j]) {
+          case 10:
+            c.fillStyle = `white`;
+            break;
+          default:
+            c.fillStyle = color[board[i][j]];
+        }
+        c.fillRect(
+          startX + j * sqSide,
+          startY + i * sqSide,
+          sqSide - 2,
+          sqSide - 2
+        );
+      }
+    }
+  }
+
+  //draw current piece
+  for (let i = 0; i < currPiece.getPiece().length; i++) {
+    for (let j = 0; j < currPiece.getPiece()[i].length; j++) {
+      if (currPiece.getPiece()[i][j] !== 0) {
+        c.fillStyle = color[currPiece.getColorIndex()];
+        //2 for the board border
+        c.fillRect(
+          startX + 2 * sqSide + currPiece.col * sqSide + j * sqSide,
+          startY + currPiece.row * sqSide + i * sqSide,
+          sqSide - 2,
+          sqSide - 2
+        );
+      }
+    }
+  }
+
+  //draw ghost piece
+  //clone piece
+  ghost = new TetrisPiece(currPiece.name);
+  ghost.piece = currPiece.getPiece();
+  ghost.col = currPiece.col;
+  ghost.row = currPiece.row;
+  //move to when possible bottom
+  while (ghost.canMoveDown(board)) {
+    ghost.update();
+  }
+  for (let i = 0; i < ghost.getPiece().length; i++) {
+    for (let j = 0; j < ghost.getPiece()[i].length; j++) {
+      if (ghost.getPiece()[i][j] !== 0) {
+        //2 for the board border
+        c.fillStyle = `white`;
+        c.strokeRect(
+          startX + 2 * sqSide + ghost.col * sqSide + j * sqSide,
+          startY + ghost.row * sqSide + i * sqSide,
+          sqSide - 2,
+          sqSide - 2
+        );
+      }
+    }
+  }
+
+  let boardEndYValue = startY + board.length * sqSide;
+  let miniSqSide = sqSide - 5;
+
+  //draw hold piece
+
+  c.fillText(`Hold `, 35, boardEndYValue + 17);
+  c.strokeRect(20, boardEndYValue + 25, 4 * miniSqSide + 1, 4 * miniSqSide + 1);
+
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      if (hold != null && hold.getPiece()[i][j] !== 0) {
+        c.fillStyle = color[hold.getColorIndex()];
+        c.fillRect(
+          22 + j * miniSqSide,
+          25 + boardEndYValue + i * miniSqSide,
+          miniSqSide - 2,
+          miniSqSide - 2
+        );
+      }
+    }
+  }
+
+  //draw next few pieces
+
+  c.fillStyle = `white`;
+  c.fillText(`Next:`, 160, boardEndYValue + 17);
+  for (let a = 0; a < pieces.length; a++) {
+    c.fillStyle = `white`;
+    c.strokeRect(
+      150 + a * (miniSqSide * 4 + 1),
+      25 + boardEndYValue,
+      4 * miniSqSide + 1,
+      4 * miniSqSide + 1
+    );
+    c.fillStyle = color[pieces[a].getColorIndex()];
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 4; j++) {
+        if (pieces[a].getPiece()[i][j] !== 0) {
+          c.fillRect(
+            151 + j * miniSqSide + a * (miniSqSide * 4 + 1),
+            25 + boardEndYValue + i * miniSqSide,
+            miniSqSide - 2,
+            miniSqSide - 2
+          );
+        }
+      }
+    }
+  }
+}
+
 function draw() {
   requestAnimationFrame(draw);
 
@@ -413,7 +549,7 @@ function draw() {
         }
         c.fillRect(
           startX + j * sqSide,
-          20 + i * sqSide,
+          startY + i * sqSide,
           sqSide - 2,
           sqSide - 2
         );
@@ -443,6 +579,7 @@ function draw() {
   c.font = `25px VT323`;
   c.fillText(`Score: `, 30, 40);
   c.fillText(score, 30, 70);
+
   //draw hold piece
   c.fillText(`Hold `, 80, 100);
   c.strokeRect(60, 130, 101, 101);
@@ -469,7 +606,7 @@ function draw() {
   c.fillText(`Next`, 660, 50);
   for (let a = 0; a < pieces.length; a++) {
     c.fillStyle = `white`;
-    c.strokeRect(640, 70 + a * 120, 101, 101);
+    c.strokeRect(640, 70 + a * 120, 4 * sqSide + 1, 4 * sqSide + 1);
     c.fillStyle = color[pieces[a].getColorIndex()];
     for (let i = 0; i < 4; i++) {
       for (let j = 0; j < 4; j++) {
