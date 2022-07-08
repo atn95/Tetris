@@ -883,6 +883,10 @@ volumeSlider.addEventListener(`click`, () => {
   //set all audio to volume to update
   bgm.volume = volume;
   lineClearedSound.volume = volume;
+  if (musicCheckBox.checked) {
+    musicCheckBox.checked = false;
+    bgm.play();
+  }
 });
 
 clearBtn.addEventListener(`click`, () => {
