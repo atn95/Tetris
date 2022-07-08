@@ -781,6 +781,23 @@ function mouseAction() {
   } else if (yDelta > xDelta && yDelta > 150) {
     if (mouseReleased.y > mouseOnClick.y) {
       downSmash();
+      board = currPiece.addToGrid(board);
+      pieces.push(generateRandomPiece());
+      currPiece = pieces.shift();
+      if (currPiece.canMoveDown(board)) {
+        //move it into grid since init row at -1;
+        currPiece.update();
+      }
+      let lineRemoved = removeCompletedRows();
+      if (lineRemoved > 0) {
+        combo++;
+      } else {
+        combo = 0;
+      }
+      score += parseInt(
+        (2 + combo) / 2 + Math.pow(10, lineRemoved) * Math.pow(level, 2)
+      );
+      canHold = true;
     }
   }
 }
