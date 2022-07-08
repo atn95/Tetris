@@ -778,7 +778,7 @@ function mouseAction() {
       }
     }
     canMoveHor = false;
-  } else if (yDelta > xDelta && yDelta > 150) {
+  } else if (yDelta > xDelta && yDelta > 150 && touched) {
     if (mouseReleased.y > mouseOnClick.y) {
       downSmash();
       board = currPiece.addToGrid(board);
@@ -797,6 +797,7 @@ function mouseAction() {
       score += parseInt(
         (2 + combo) / 2 + Math.pow(10, lineRemoved) * Math.pow(level, 2)
       );
+      touched = false;
       canHold = true;
     }
   }
