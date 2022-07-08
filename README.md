@@ -62,3 +62,7 @@ Tetris will be a single player tetris game built mainly with javascript dealing 
 ## Local Storage
 
 - https://developer.mozilla.org/en-US/docs/Web/API/Storage
+
+## Touch Event
+
+- https://developer.mozilla.org/en-US/docs/Web/API/Touch_events/Using_Touch_Events

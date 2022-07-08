@@ -222,7 +222,6 @@ let mute = musicCheckBox.checked;
 // 375, 667 cmmon mobile screen
 gameboard.width = !mobile ? 800 : window.innerWidth;
 gameboard.height = 600;
-
 const cWidth = gameboard.width;
 const cHeight = gameboard.height;
 const sqSide = !mobile ? 25 : 21;
@@ -278,6 +277,15 @@ let board = [
 
 const startX = (gameboard.width - board[0].length * sqSide) / 2; // X value where board is drawn
 const startY = !mobile ? 20 : 30; // Y value where board is drawn
+
+//Mouse controls for mobile
+let mouseOnClick = { x: 0, y: 0 };
+let mouseReleased = { x: 0, y: 0 };
+let touched = false;
+let mouseDelta = 10;
+let updateTicks = 0;
+let holdCounter = 0;
+let canMoveHor = true;
 
 function clearBoard() {
   for (let i = 0; i < board.length - 2; i++) {
@@ -490,6 +498,17 @@ function drawMobile() {
       }
     }
   }
+
+  //mobile var helping with touch events
+  if (play) {
+    updateTicks++;
+    if (updateTicks % 15 === 0) {
+      canMoveHor = true;
+    }
+    if (touched) {
+      holdCounter++;
+    }
+  }
 }
 
 function draw() {
@@ -625,6 +644,7 @@ function draw() {
 
 function update() {
   if (play) {
+    checkHoldAction();
     if (currPiece.canMoveDown(board)) {
       currPiece.update();
     } else {
@@ -647,7 +667,6 @@ function update() {
         currPiece.update();
       }
     }
-    console.log(combo);
     score += level * 100;
     if (score > 1500000) {
       level = 10;
@@ -732,6 +751,47 @@ function holdSwap() {
     }
   }
   canHold = false;
+}
+
+function checkHoldAction() {
+  console.log(`called`);
+  console.log(holdCounter);
+  if (touched && holdCounter > 30) {
+    touched = false;
+    holdCounter = 0;
+    holdSwap();
+  }
+}
+
+//determine what to do base on mouse action
+function mouseAction() {
+  let xDelta = Math.abs(mouseOnClick.x - mouseReleased.x);
+  let yDelta = Math.abs(mouseOnClick.y - mouseReleased.y);
+  if (xDelta > yDelta && canMoveHor && xDelta > 100) {
+    if (mouseReleased.x > mouseOnClick.x) {
+      if (currPiece.canMoveRight(board)) {
+        currPiece.right();
+      }
+    } else {
+      if (currPiece.canMoveLeft(board)) {
+        currPiece.left();
+      }
+    }
+    canMoveHor = false;
+  } else if (yDelta > xDelta && yDelta > 150) {
+    if (mouseReleased.y > mouseOnClick.y) {
+      downSmash();
+    }
+  }
+}
+
+function mouseRelease() {
+  let xDelta = Math.abs(mouseOnClick.x - mouseReleased.x);
+  let yDelta = Math.abs(mouseOnClick.y - mouseReleased.y);
+
+  if (xDelta < mouseDelta && yDelta < mouseDelta && !touched) {
+    currPiece.rotate(board);
+  }
 }
 
 addEventListener(`keydown`, () => {
@@ -825,4 +885,36 @@ musicCheckBox.addEventListener(`click`, () => {
 
 playBtn.addEventListener(`click`, start);
 
+gameboard.addEventListener(`touchstart`, (event) => {
+  mouseOnClick.x = event.touches[0].pageX;
+  mouseOnClick.y = event.touches[0].pageY;
+  holdCounter = 0;
+  touched = true;
+  if (play) {
+    console.log(`if statement true`);
+  }
+});
+
+gameboard.addEventListener(`touchmove`, (event) => {
+  mouseReleased.x = event.changedTouches[0].pageX;
+  mouseReleased.y = event.changedTouches[0].pageY;
+  holdCounter++;
+  if (play) {
+    mouseAction();
+  }
+});
+
+gameboard.addEventListener(`touchend`, (event) => {
+  mouseReleased.x = event.changedTouches[0].pageX;
+  mouseReleased.y = event.changedTouches[0].pageY;
+  touched = false;
+  if (play) {
+    mouseRelease();
+  }
+});
+
+//removing right click
+if (mobile) {
+  document.addEventListener('contextmenu', (event) => event.preventDefault());
+}
 init();
