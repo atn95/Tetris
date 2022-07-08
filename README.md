@@ -11,8 +11,8 @@
 ---
 
 # **_Description_**
+Single player Tetris with a local highscore board. As score grows so does level and background music play speed scales with level. Controls are faily intuitive with Right and Left arrow key for right left movement. Up arrow to rotate with c to hold and space for a quick down.
 
-Tetris will be a single player tetris game built mainly with javascript dealing with the canvas tag and a bit of html/css for the site that will hold the game.
 
 [Trello](https://trello.com/invite/b/KazgOlwT/9a1fc99b9e15bfa01203c1a0c030ea8b/tetris)
 
